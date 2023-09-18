@@ -1,0 +1,13 @@
+{
+    "apple":{
+        "color":{
+            "occurrence":"sometimes",
+            "values": ["red","yellow","green"],
+            "connector":"or"
+        },
+        "shape":{
+            "occurrence":"sometitmes",
+            "values": ["round"]
+        }
+    }
+}

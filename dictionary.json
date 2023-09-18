@@ -1,0 +1,177 @@
+{
+    "THING":{"text":"THING","priority":0},
+    "NAME":{"text":"NAME","priority":0},
+    "NULL":{"text":"NULL","priority":0},
+    "hello": {
+        "text":"hello",
+        "priority": 1
+    },
+    "greetings": {
+        "text":"greetings",
+        "priority": 1
+    },
+    "a": {
+        "text":"a",
+        "priority": 1,
+        "tags":["Indefinite"]
+    },
+    "an": {
+        "text":"an",
+        "priority": 1,
+        "tags":["Indefinite"]
+    },
+    "the": {
+        "text":"the",
+        "priority": 1,
+        "tags":["Indefinite"]
+    },
+    "of": {
+        "text":"of",
+        "priority": 1,
+        "tags":["Of"]
+    },
+    "apple":{
+        "text":"apple",
+        "priority":1,
+        "tags":["THING"],
+        "attributes":{
+            "color":"red",
+            "shape": "round"
+        },
+        "summary": "a fruit"
+    },
+    "apples":{
+        "text":"apples",
+        "priority":1,
+        "tags":["THINGS","THING"],
+        "attributes":{
+            "color":"red",
+            "shape": "round"
+        },
+        "summary": "fruits"
+    },
+    "color": {
+        "text":"color",
+        "priority": 1,
+        "tags":["Attribute"]
+    },
+    "shape": {
+        "text":"shape",
+        "priority": 1,
+        "tags":["Attribute"]
+    },
+    "hsr": {
+        "text":"hsr",
+        "priority": 1,
+        "tags": [
+            "THING","NAME"
+        ],
+        "summary":"a complex input-output word processing algorithm"
+    },
+    "me":{
+        "text":"me",
+        "priority":1,
+        "subjective":true,
+        "tags":[
+            "THING","NAME"
+        ]
+    },
+    "is":{
+        "text": "is",
+        "priority":1,
+        "tags":[
+            "Comparator"
+        ]
+    },
+    "are":{
+        "text": "are",
+        "priority":1,
+        "tags":[
+            "Comparator"
+        ]
+    },
+    "what":{
+        "text":"what",
+        "priority":1,
+        "tags":[
+            "Definer_desc"
+        ]
+    },
+    "where":{
+        "text":"where",
+        "priority":1,
+        "tags":[
+            "Definer_location"
+        ]
+    },
+    "when":{
+        "text":"when",
+        "priority":1,
+        "tags":[
+            "Definer_time"
+        ]
+    },
+    "how":{
+        "text":"how",
+        "priority":1,
+        "tags":[
+            "Definer_how"
+        ]
+    },
+    "who":{
+        "text":"who",
+        "priority":1,
+        "tags":[
+            "Definer_person"
+        ]
+    },
+    "today":{
+        "text":"today",
+        "priority":1,
+        "tags":[
+            "DATE","DAY_REL","DAY"
+        ]
+    },    
+    "tomorrow":{
+        "text":"tomorrow",
+        "priority":1,
+        "tags":[
+            "DATE","DAY_REL","DAY"
+        ]
+    },    
+    "yesterday":{
+        "text":"yesterday",
+        "priority":1,
+        "tags":[
+            "DATE","DAY_REL","DAY"
+        ]
+    },
+    "todays":{
+        "text":"todays",
+        "priority":1,
+        "tags":[
+            "DATE","DAY_REL","DAY"
+        ]
+    },    
+    "tomorrows":{
+        "text":"tomorrows",
+        "priority":1,
+        "tags":[
+            "DATE","DAY_REL","DAY"
+        ]
+    },    
+    "yesterdays":{
+        "text":"yesterdays",
+        "priority":1,
+        "tags":[
+            "DATE","DAY_REL","DAY"
+        ]
+    },
+    "date":{
+        "text":"date",
+        "priority":1,
+        "tags":[
+            "CONSTRUCT"
+        ]
+    }
+}

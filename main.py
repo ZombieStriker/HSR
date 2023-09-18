@@ -1,5 +1,7 @@
+print("Loading Speech Recognition...")
 import speech_recognition as sr
 
+print("Loading Text To Speech modules...")
 import numpy
 import torch 
 from TTS.api import TTS 
@@ -28,7 +30,7 @@ from actions.writeToSpeak import WriteAction
 from actions.say import SpeakAction
 from actions.parsefactaction import ParseFactAction
 
-
+print("Loading dictionaries, libraries, and facts...")
 dictionary = json.loads(open(os.path.join("dictionary.json"),"r").read())
 library = json.loads(open(os.path.join("library.json"),"r").read())
 facts = json.loads(open(os.path.join("facts.json"),"r").read())

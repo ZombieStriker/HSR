@@ -324,8 +324,8 @@ def speak(message, tts):
                         lastmodified =  os.path.getmtime(os.path.join("voice",path))
                         audiofile = path
 
-            print("Deleting oldest audio file: "+path)
-            os.remove(os.path.join("voice",path))
+            print("Deleting oldest audio file: "+audiofile)
+            os.remove(os.path.join("voice",audiofile))
 
 
 

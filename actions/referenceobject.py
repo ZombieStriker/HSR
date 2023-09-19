@@ -3,15 +3,15 @@ class ReferenceObjectAction(AAction):
     def __init__(self,):
         super().__init__("RefObj")
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext, actiondataball):
 
         var_gross = 0
 
         try:
-            if "var_"+self.p1 in databall:
-                var_gross = databall["var_"+self.p1]
+            if "var_"+self.params[0] in databall:
+                var_gross = databall["var_"+self.params[0]]
         except:
-            print("Failed to find "+self.p1)
+            print("Failed to find "+self.params[0])
 
 
         stringname = currentContext[var_gross].text
@@ -20,7 +20,7 @@ class ReferenceObjectAction(AAction):
             stringtemp=stringtemp.join(stringname[i])
             if i < len(stringname)-1:
                 stringtemp=stringtemp.join("_")
-        if stringtemp in memory:
-            databall["memory1"]= memory[stringtemp]
+        if stringtemp in actiondataball.memory:
+            databall["memory1"]= actiondataball.memory[stringtemp]
         else:
-            databall["memory1"] = memory["NULL"]
+            databall["memory1"] = actiondataball.memory["NULL"]

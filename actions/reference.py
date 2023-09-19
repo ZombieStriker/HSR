@@ -3,8 +3,8 @@ class ReferenceAction(AAction):
     def __init__(self,):
         super().__init__("Ref")
 
-    def action(self,databall, currentContext, memory, tts, speak):
-        if self.p1 in memory:
-            databall["memory1"]= memory[self.p1]
+    def action(self,databall, currentContext, actiondataball):
+        if self.p1 in actiondataball.memory:
+            databall["memory1"]= actiondataball.memory[self.params[0]]
         else:
-            databall["memory1"] = memory["NULL"]
+            databall["memory1"] = actiondataball.memory["NULL"]

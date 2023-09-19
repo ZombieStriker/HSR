@@ -17,6 +17,8 @@
 * "Tell me a joke"
     * The bot will currently respond that its humor emitters are offline.
         * //TODO: Write Joke Creator 
+* "Count down from ____"
+    * The bot will count down from the given number
 
 ## Contractions
 * Whats -> What is

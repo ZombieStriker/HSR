@@ -5,8 +5,8 @@ class LookUpAction(AAction):
         super().__init__("LookUp")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
-        if "memory1" in databall and self.p1 in databall["memory1"]:
-            databall["memory1"] = databall["memory1"][self.p1]
+    def action(self,databall, currentContext, actiondataball):
+        if "memory1" in databall and self.params[0] in databall["memory1"]:
+            databall["memory1"] = databall["memory1"][self.params[0]]
         else:
-            databall["memory1"] = memory["NULL"]
+            databall["memory1"] = actiondataball.memory["NULL"]

@@ -5,7 +5,7 @@ class ParseFactAction(AAction):
         super().__init__("ParseFact")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext, actiondataball):
         if "memory1" in databall:
             ocurrence = databall["memory1"]["occurrence"]
             values = databall["memory1"]["values"]
@@ -28,4 +28,4 @@ class ParseFactAction(AAction):
             databall["memory1"] = formatted_str
 
         else:
-            databall["memory1"] = memory["NULL"]
+            databall["memory1"] = actiondataball.memory["NULL"]

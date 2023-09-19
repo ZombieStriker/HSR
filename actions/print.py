@@ -5,8 +5,6 @@ class PrintAction(AAction):
         super().__init__("Print")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext,actiondataball):
         if "memory1" in databall:
               print(databall["memory1"])
-        else:
-            databall["memory1"] = memory["NULL"]

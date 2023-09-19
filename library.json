@@ -1,4 +1,15 @@
 {
+    "CountdownFromX":{
+        "input":["countdown", "from", "{NUMBER}:number"],
+        "priority":0,
+        "stack":[
+            "WriteT:countdown from",
+            "WriteV:number",
+            "Say:",
+            "AddSP:Countdown:&number"
+        ]
+
+    },
     "TellMeAJoke-HumorEmittor":{
         "input":["tell", "me" ,"a","joke"],
         "priority":0,

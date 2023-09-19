@@ -5,11 +5,11 @@ class LookUpVAction(AAction):
         super().__init__("LookUpV")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext, actiondataball):
         var_gross = 0
 
-        if "var_"+self.p1 in databall:
-            var_gross = databall["var_"+self.p1]
+        if "var_"+self.params[0] in databall:
+            var_gross = databall["var_"+self.params[0]]
 
         stringname = currentContext[var_gross].text
         stringtemp = ""
@@ -21,4 +21,4 @@ class LookUpVAction(AAction):
         if "memory1" in databall and stringtemp in databall["memory1"]:
             databall["memory1"] = databall["memory1"][stringtemp]
         else:
-            databall["memory1"] = memory["NULL"]
+            databall["memory1"] = actiondataball.memory["NULL"]

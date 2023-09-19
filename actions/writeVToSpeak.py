@@ -5,22 +5,22 @@ class WriteVAction(AAction):
         super().__init__("WriteV")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext,actiondataball):
         var_gross = -1
 
         try:
-            if "var_"+self.p1 in databall:
-                var_gross = databall["var_"+self.p1]
+            if "var_"+self.params[0] in databall:
+                var_gross = databall["var_"+self.params[0]]
         except:
-            print("Failed to find "+self.p1)
+            print("Failed to find "+self.params[0])
 
 
 
 
         if var_gross>=0:
             lenth = 1
-            if "varlen_"+self.p1 in databall:
-                lenth = int(databall["varlen_"+self.p1])
+            if "varlen_"+self.params[0] in databall:
+                lenth = int(databall["varlen_"+self.params[0]])
             j = 0
             while j < lenth:
                 stringname = currentContext[var_gross+j].text
@@ -30,8 +30,10 @@ class WriteVAction(AAction):
                     stringtemp=stringtemp.join(stringname[i])
                     if i < len(stringname)-1:
                         stringtemp=stringtemp.join("_")
-                if stringtemp in memory:
+                if stringtemp in actiondataball.memory:
                     if "output" in databall:
-                        databall["output"] = databall["output"]+" "+(memory[stringtemp])["name"]
+                        databall["output"] = databall["output"]+" "+(actiondataball.memory[stringtemp])["name"]
                     else:
-                        databall["output"] = memory[stringtemp]["name"]
+                        databall["output"] = actiondataball.memory[stringtemp]["name"]
+        else:
+            print("Cannot find "+str(var_gross)+" (var_"+self.params[0]+")")

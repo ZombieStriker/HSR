@@ -29,6 +29,12 @@ from actions.writeTToSpeak import WriteTAction
 from actions.writeToSpeak import WriteAction
 from actions.say import SpeakAction
 from actions.parsefactaction import ParseFactAction
+from actions.addsubprocess import AddSubProcessAction
+
+from sprocesses.countdown import CountdownSubprocess
+from sprocesses.timer import TimerSubprocess
+
+from data.databall import DataBall
 
 print("Loading dictionaries, libraries, and facts...")
 dictionary = json.loads(open(os.path.join("dictionary.json"),"r").read())
@@ -38,6 +44,8 @@ contractions = json.loads(open(os.path.join("contractions.json"),"r").read())
 
 object_memory = {}
 object_facts = {}
+
+subprocesses = []
 
 for j in dictionary:
     x = {}
@@ -73,7 +81,12 @@ ACTIONS.append(WriteVAction())
 ACTIONS.append(WriteTAction())
 ACTIONS.append(SpeakAction())
 ACTIONS.append(ParseFactAction())
+ACTIONS.append(AddSubProcessAction())
 
+
+SUBPROCESSES = []
+SUBPROCESSES.append(CountdownSubprocess())
+SUBPROCESSES.append(TimerSubprocess())
 
 
 
@@ -83,7 +96,7 @@ def getVoice():
         r.energy_threshold=350
         text = ""
         try:
-            temp = r.listen(source=source,timeout=2.5)
+            temp = r.listen(source=source,timeout=0.7)
             try:
                 text = r.recognize_google(temp)
             except:
@@ -116,6 +129,19 @@ def main():
 
     speak("HSR online",tts)
     while True:
+
+        subprocessDataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,speakmethod=speak,tts=tts)
+        listToRemove = []
+        for subprocess in subprocesses:
+            if subprocess.tick(subprocessDataball):
+                listToRemove.append(subprocess)
+
+        for i in listToRemove:
+            subprocesses.remove(i)
+
+
+
+
         text = getVoice()
         if(len(text)==0):
             continue
@@ -286,22 +312,31 @@ def main():
                     if jj["priority"] > highestListPriority:
                         highestListPriority = jj["priority"]
                         listOfSentenceChecks = []
-                        listOfSentenceChecks.append(jj)
+                        listOfSentenceChecks.append({
+                            "jj":jj,
+                            "databall":tdataball
+                            })
                     elif jj["priority"] == highestListPriority:
-                        listOfSentenceChecks.append(jj)
+                        listOfSentenceChecks.append({
+                            "jj":jj,
+                            "databall":tdataball
+                            })
 
 
         if len(listOfSentenceChecks) == 0:
             continue
-        selectedSentence = listOfSentenceChecks[random.randint(0,len(listOfSentenceChecks)-1)]
+        value = listOfSentenceChecks[random.randint(0,len(listOfSentenceChecks)-1)]
+        selectedSentence = value["jj"]
         stack = []
         print("Found sentence structure : "+str(selectedSentence["input"]))
         
         for action in selectedSentence["stack"]:
             stack.append(action)
-        for k in tdataball:
-            databall[k]=tdataball[k]
+        for k in value["databall"]:
+            databall[k]=value["databall"][k]
                 
+
+        actiondataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,speakmethod=speak,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,tts=tts)
 
         for actionraw in stack:
             actionsplit = actionraw.split(":",1)
@@ -317,11 +352,13 @@ def main():
             for a in ACTIONS:
                 if a.name == actionname:
                     a.setParameters(params)
-                    a.action(databall,cc,object_memory,tts,speak)
+                    a.action(databall,cc,actiondataball)
 
 
 
 def speak(message, tts):
+    if type(message) is not str:
+        message = str(message)
     message=message.strip()
     print("HSR: "+message)
     if not os.path.exists(os.path.join("voice",message+".wav")):

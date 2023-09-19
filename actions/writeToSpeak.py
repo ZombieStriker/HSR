@@ -5,7 +5,7 @@ class WriteAction(AAction):
         super().__init__("Write")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext, actiondataball):
         if "memory1" in databall:
             if "output" in databall:
                 databall["output"] = databall["output"]+" "+(databall["memory1"])

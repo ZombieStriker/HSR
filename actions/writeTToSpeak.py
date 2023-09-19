@@ -5,14 +5,14 @@ class WriteTAction(AAction):
         super().__init__("WriteT")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
-        if self.p1 in memory:
+    def action(self,databall, currentContext,actiondataball):
+        if self.params[0] in actiondataball.memory:
             if "output" in databall:
-                    databall["output"] = databall["output"]+" "+memory[self.p1]["name"]
+                    databall["output"] = databall["output"]+" "+actiondataball.memory[self.params[0]]["name"]
             else:
-                    databall["output"] = memory[self.p1]["name"]
+                    databall["output"] = actiondataball.memory[self.params[0]]["name"]
         else:
             if "output" in databall:
-                    databall["output"] = databall["output"]+" "+self.p1
+                    databall["output"] = databall["output"]+" "+self.params[0]
             else:
-                    databall["output"] = self.p1
+                    databall["output"] = self.params[0]

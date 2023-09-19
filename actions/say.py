@@ -5,6 +5,8 @@ class SpeakAction(AAction):
         super().__init__("Say")
 
 
-    def action(self,databall, currentContext, memory, tts, speak):
+    def action(self,databall, currentContext,actiondataball):
         if "output" in databall:
-              speak(databall["output"],tts)
+              actiondataball.speak(databall["output"])
+        else:
+             print("No output :(")

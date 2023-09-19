@@ -80,7 +80,7 @@ ACTIONS.append(ParseFactAction())
 def getVoice():
     with sr.Microphone() as source:
         r = sr.Recognizer()
-        r.energy_threshold=450
+        r.energy_threshold=350
         text = ""
         try:
             temp = r.listen(source=source,timeout=1)
@@ -169,6 +169,7 @@ def main():
 
             starOperator = False
             hasStarOperator = False
+            tdataball = {}
 
             for inputWords in jj["input"]:
                 if inputWords.startswith("*") or inputWords.startswith("?*"):
@@ -180,22 +181,22 @@ def main():
                     optional_words=optional_words+1
             
             for inputWords in jj["input"]:
-
                     
                 if(inputWords.count(":")>0):
                     inputsplit = inputWords.split(":")
                     inputWords=inputsplit[0]
-                    databall["var_"+inputsplit[1]] = index
+                    tdataball["var_"+inputsplit[1]] = index
 
                 if inputWords == "*":
                     starOperator=True
                     if(inputWords.count(":")>0):
                         inputsplit = inputWords.split(":")
                         inputWords=inputsplit[0]
-                        databall["var_"+inputsplit[1]] = index
+                        tdataball["var_"+inputsplit[1]] = index
                     lenthOfVar = 1       
                     index=index+1
                     continue
+
                 if starOperator:                     
                     while starOperator:        
                         isQuestionable = False
@@ -225,7 +226,7 @@ def main():
                         else:
                             lenthOfVar=lenthOfVar+1  
                         
-                    databall["varlen_"+inputsplit[1]] = lenthOfVar
+                    tdataball["varlen_"+inputsplit[1]] = lenthOfVar
                 else:
                     isQuestionable = False
                     if len(cc) <= index:
@@ -266,7 +267,7 @@ def main():
                 starOperator=False
                 lenthOfVar=len(words)+1-index
                 index = len(cc)
-                databall["varlen_"+inputsplit[1]] = lenthOfVar
+                tdataball["varlen_"+inputsplit[1]] = lenthOfVar
 
             
             if not hasStarOperator:
@@ -283,6 +284,8 @@ def main():
                         for action in jj["stack"]:
                             stack.append(action)
                         lastjj = jj
+                        for k in tdataball:
+                            databall[k]=tdataball[k]
                 
 
         for actionraw in stack:
@@ -307,6 +310,25 @@ def speak(message, tts):
     message=message.strip()
     print("HSR: "+message)
     if not os.path.exists(os.path.join("voice",message+".wav")):
+        count = 0
+        for path in os.listdir(os.path.join("voice")):
+            if os.path.isfile(os.path.join("voice",path)):
+                count=count+1
+        print(count)
+        if count > 400:
+            audiofile = None
+            lastmodified = -1
+            for path in os.listdir(os.path.join("voice")):
+                if os.path.isfile(os.path.join("voice",path)):
+                    if lastmodified == -1 or  os.path.getmtime(os.path.join("voice",path))< lastmodified:
+                        lastmodified =  os.path.getmtime(os.path.join("voice",path))
+                        audiofile = path
+
+            print("Deleting oldest audio file: "+path)
+            os.remove(os.path.join("voice",path))
+
+
+
         tts.tts_to_file(message+".", file_path="voice/"+message+".wav")
     init = AudioSegment.from_wav("voice/"+message+".wav")
     play(init)

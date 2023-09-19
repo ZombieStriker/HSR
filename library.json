@@ -31,7 +31,7 @@
     },
     "whatisblank":{
         "input":["{Definer_desc}","{Comparator}:comp1","?{Indefinite}:ind1","{THING}:thing"],
-        "Stack":[
+        "stack":[
             "WriteV:ind1",
             "WriteV:thing",
             "WriteV:comp1",
@@ -43,7 +43,7 @@
     }, 
     "whatisattributeofblank":{
         "input":["{Definer_desc}","{Comparator}:comp1","?{Indefinite}:ind1","{Attribute}:attribute","{Of}","?{Indefinite}:ind2","{THING}:thing"],
-        "Stack":[
+        "stack":[
             "WriteV:ind1",
             "WriteV:attribute",
             "WriteT:of",

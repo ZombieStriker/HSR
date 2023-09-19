@@ -8,6 +8,11 @@ class WriteTAction(AAction):
     def action(self,databall, currentContext, memory, tts, speak):
         if self.p1 in memory:
             if "output" in databall:
-                databall["output"] = databall["output"]+" "+memory[self.p1]["name"]
+                    databall["output"] = databall["output"]+" "+memory[self.p1]["name"]
             else:
-              databall["output"] =memory[self.p1]["name"]
+                    databall["output"] = memory[self.p1]["name"]
+        else:
+            if "output" in databall:
+                    databall["output"] = databall["output"]+" "+self.p1
+            else:
+                    databall["output"] = self.p1

@@ -83,11 +83,11 @@ def getVoice():
         r.energy_threshold=350
         text = ""
         try:
-            temp = r.listen(source=source,timeout=1)
+            temp = r.listen(source=source,timeout=2.5)
             try:
                 text = r.recognize_google(temp)
             except:
-                print("Error")
+                print("Unable to detect words.")
         except:
             return ""
     return text.lower()
@@ -272,7 +272,7 @@ def main():
             
             if not hasStarOperator:
                 if not (foundwords>= nonoptional_words and ((foundwords <= nonoptional_words+optional_words))):
-                    print("Not same length: "+str(foundwords)+" ["+str(nonoptional_words)+", "+str(nonoptional_words+optional_words)+"]")
+                    #print("Not same length: "+str(foundwords)+" ["+str(nonoptional_words)+", "+str(nonoptional_words+optional_words)+"]")
                     continue
 
 
@@ -281,6 +281,7 @@ def main():
                     if(lastjj == None) or len(jj["input"])>=len(lastjj["input"]):
                         stack = []
                         print("Found sentence structure : "+str(jj["input"]))
+
                         for action in jj["stack"]:
                             stack.append(action)
                         lastjj = jj

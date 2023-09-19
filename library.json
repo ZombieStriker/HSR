@@ -1,4 +1,11 @@
 {
+    "TellMeAJoke-HumorEmittor":{
+        "input":["tell", "me" ,"a","joke"],
+        "stack":[
+            "WriteT:sorry my humor emitters are offline",
+            "Say:"
+        ]
+    },
     "Say*":{
         "input":["say","*:star"],
         "stack":[

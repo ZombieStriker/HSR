@@ -96,7 +96,7 @@ def findRightMeaning(words, index):
     wordsEnd = words[index:]
     
     cc = WordContextContainer(wordsEnd)
-    cc.process(dictionary)
+    cc.process(dictionary,object_memory)
 
     return cc
 
@@ -167,63 +167,120 @@ def main():
             nonoptional_words = 0
             optional_words = 0
 
+            starOperator = False
+            hasStarOperator = False
+
             for inputWords in jj["input"]:
-                if not inputWords.startswith("?"):
+                if inputWords.startswith("*") or inputWords.startswith("?*"):
+                    hasStarOperator = True
+
+                elif not inputWords.startswith("?"):
                     nonoptional_words=nonoptional_words+1
                 else:
                     optional_words=optional_words+1
+            
             for inputWords in jj["input"]:
 
+                    
                 if(inputWords.count(":")>0):
                     inputsplit = inputWords.split(":")
                     inputWords=inputsplit[0]
                     databall["var_"+inputsplit[1]] = index
 
-                isQuestionable = False
-                if len(cc) <= index:
-                    continue
-                meanings=cc[index]
-
-                if not inputWords.startswith("?"):
-                    index=index+1
-                else:
-                    inputWords = inputWords[1:]
-                    isQuestionable = True
-                tagfound = False
                 if inputWords == "*":
-                    tagfound=True
-
-                if not tagfound:
-                    for name in meanings.text:
-                        if inputWords == name:
-                            tagfound=True
-
-                if not tagfound:
-                    for tags in meanings.tags:
-                        if inputWords == "{"+tags+"}":
-                           tagfound=True
-                           break
-
-                if isQuestionable:
-                    if tagfound:
-                         index=index+1
-                         foundwords=foundwords+1
-                elif not tagfound:
-                    isPattern=False
+                    starOperator=True
+                    if(inputWords.count(":")>0):
+                        inputsplit = inputWords.split(":")
+                        inputWords=inputsplit[0]
+                        databall["var_"+inputsplit[1]] = index
+                    lenthOfVar = 1       
+                    index=index+1
                     continue
+                if starOperator:                     
+                    while starOperator:        
+                        isQuestionable = False
+                        if len(cc) <= index:
+                            break
+                        meanings=cc[index]
+                        if  inputWords.startswith("?"):
+                            inputWords = inputWords[1:]
+                            isQuestionable = True
+
+                        tagfound = False
+                        if not tagfound:
+                            for name in meanings.text:
+                                if inputWords == name:
+                                    tagfound=True
+                                    starOperator=False
+
+                        if not tagfound:
+                            for tags in meanings.tags:
+                                if inputWords == "{"+tags+"}":
+                                    tagfound=True
+                                    starOperator = False
+                                    break
+
+                        if tagfound:
+                            index=index+1  
+                        else:
+                            lenthOfVar=lenthOfVar+1  
+                        
+                    databall["varlen_"+inputsplit[1]] = lenthOfVar
                 else:
-                    foundwords=foundwords+1
+                    isQuestionable = False
+                    if len(cc) <= index:
+                        continue
+                    meanings=cc[index]
+
+                    if not inputWords.startswith("?"):
+                        index=index+1
+                    else:
+                        inputWords = inputWords[1:]
+                        isQuestionable = True
+                    tagfound = False
+                    if inputWords == "*":
+                        tagfound=True
+
+                    if not tagfound:
+                        for name in meanings.text:
+                            if inputWords == name:
+                                tagfound=True
+
+                    if not tagfound:
+                        for tags in meanings.tags:
+                            if inputWords == "{"+tags+"}":
+                                tagfound=True
+                                break
+
+                    if isQuestionable:
+                        if tagfound:
+                             index=index+1
+                             foundwords=foundwords+1
+                    elif not tagfound:
+                        isPattern=False
+                        continue
+                    else:
+                        foundwords=foundwords+1
+
+            if starOperator:
+                starOperator=False
+                lenthOfVar=len(words)+1-index
+                index = len(cc)
+                databall["varlen_"+inputsplit[1]] = lenthOfVar
+
             
-            if not (foundwords>= nonoptional_words and foundwords <= nonoptional_words+optional_words):
-                print("Not same length: "+str(foundwords)+" ["+str(nonoptional_words)+", "+str(nonoptional_words+optional_words)+"]")
-                continue
+            if not hasStarOperator:
+                if not (foundwords>= nonoptional_words and ((foundwords <= nonoptional_words+optional_words))):
+                    print("Not same length: "+str(foundwords)+" ["+str(nonoptional_words)+", "+str(nonoptional_words+optional_words)+"]")
+                    continue
 
 
             if isPattern:
                 if index == len(cc):
                     if(lastjj == None) or len(jj["input"])>=len(lastjj["input"]):
                         stack = []
-                        for action in jj["Stack"]:
+                        print("Found sentence structure : "+str(jj["input"]))
+                        for action in jj["stack"]:
                             stack.append(action)
                         lastjj = jj
                 

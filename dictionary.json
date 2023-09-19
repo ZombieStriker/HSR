@@ -6,6 +6,11 @@
         "text":"hello",
         "priority": 1
     },
+    "say":{
+        "text":"say",
+        "priority":1,
+        "tags":["Command"]
+    },
     "greetings": {
         "text":"greetings",
         "priority": 1

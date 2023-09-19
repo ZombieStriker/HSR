@@ -9,7 +9,7 @@ class WordContextContainer:
             temp = temp+s
         return temp+"{"+str(self.tags)+"}"
 
-    def process(self, dictionary):
+    def process(self, dictionary, memory):
         words = self.text
         c_meaning = None
         c_priority = -1
@@ -38,5 +38,18 @@ class WordContextContainer:
             self.tags = self.meaning["tags"]
         except:
             self.tags=[]
-        self.wordsLen = len(self.meaning["text"].split(" "))
-        self.text=self.text[:self.wordsLen]
+        if c_meaning:
+            self.meaning=c_meaning
+            self.wordsLen = len(self.meaning["text"].split(" "))
+            self.text=self.text[:self.wordsLen]
+        else:
+            self.wordsLen = 1
+            self.text=self.text[:self.wordsLen]
+            self.meaning = {
+                "text":self.text,
+                "priority":-1,
+                "tags":["UNKNOWN"]
+            }
+            x = {}
+            x["name"] = self.text[0]
+            memory[x["name"]]=x

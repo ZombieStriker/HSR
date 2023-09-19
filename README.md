@@ -14,6 +14,9 @@
     * The bot will look up what day of the way the {Day} is, and relay it back to you.
 * "Say ____"
     * The bot will repeat what you say.
+* "Tell me a joke"
+    * The bot will currently respond that its humor emitters are offline.
+        * //TODO: Write Joke Creator 
 
 ## Contractions
 * Whats -> What is

@@ -158,6 +158,11 @@ def main():
                 contextText = contextText+" "+i.str()
         print(contextText)
         
+
+        listOfSentenceChecks = []
+        highestListPriority = -2
+
+
         for j in library:
             jj = library[j]
             isPattern = True
@@ -278,15 +283,24 @@ def main():
 
             if isPattern:
                 if index == len(cc):
-                    if(lastjj == None) or len(jj["input"])>=len(lastjj["input"]):
-                        stack = []
-                        print("Found sentence structure : "+str(jj["input"]))
+                    if jj["priority"] > highestListPriority:
+                        highestListPriority = jj["priority"]
+                        listOfSentenceChecks = []
+                        listOfSentenceChecks.append(jj)
+                    elif jj["priority"] == highestListPriority:
+                        listOfSentenceChecks.append(jj)
 
-                        for action in jj["stack"]:
-                            stack.append(action)
-                        lastjj = jj
-                        for k in tdataball:
-                            databall[k]=tdataball[k]
+
+        if len(listOfSentenceChecks) == 0:
+            continue
+        selectedSentence = listOfSentenceChecks[random.randint(0,len(listOfSentenceChecks)-1)]
+        stack = []
+        print("Found sentence structure : "+str(selectedSentence["input"]))
+        
+        for action in selectedSentence["stack"]:
+            stack.append(action)
+        for k in tdataball:
+            databall[k]=tdataball[k]
                 
 
         for actionraw in stack:

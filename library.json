@@ -1,13 +1,31 @@
 {
     "TellMeAJoke-HumorEmittor":{
         "input":["tell", "me" ,"a","joke"],
+        "priority":0,
         "stack":[
             "WriteT:sorry my humor emitters are offline",
             "Say:"
         ]
     },
+    "TellMeAJoke-SelfDestruct":{
+        "input":["tell", "me" ,"a","joke"],
+        "priority":0,
+        "stack":[
+            "WriteT:self destruct sequence activated. t minus 5, 4, 3",
+            "Say:"
+        ]
+    },
+    "TellMeAJoke-YouWontHearThisOne":{
+        "input":["tell", "me" ,"a","joke"],
+        "priority":-1,
+        "stack":[
+            "WriteT:you wont hear this one",
+            "Say:"
+        ]
+    },
     "Say*":{
         "input":["say","*:star"],
+        "priority":0,
         "stack":[
             "WriteV:star",
             "Say:"
@@ -15,6 +33,7 @@
     },
     "WhatISToday":{
         "input":["{Definer_desc}","{Comparator}:comp1","{DAY_REL}:dayrel"],
+        "priority":0,
         "stack":[
             "WriteV:dayrel",
             "WriteV:comp1",
@@ -26,6 +45,7 @@
     },
     "WhatISTodaysDate":{
         "input":["{Definer_desc}","{Comparator}:comp1","{DAY_REL}:dayrel","date:date"],
+        "priority":0,
         "stack":[
             "WriteV:dayrel",
             "WriteV:date",
@@ -38,6 +58,7 @@
     },
     "whatisblank":{
         "input":["{Definer_desc}","{Comparator}:comp1","?{Indefinite}:ind1","{THING}:thing"],
+        "priority":0,
         "stack":[
             "WriteV:ind1",
             "WriteV:thing",
@@ -50,6 +71,7 @@
     }, 
     "whatisattributeofblank":{
         "input":["{Definer_desc}","{Comparator}:comp1","?{Indefinite}:ind1","{Attribute}:attribute","{Of}","?{Indefinite}:ind2","{THING}:thing"],
+        "priority":0,
         "stack":[
             "WriteV:ind1",
             "WriteV:attribute",

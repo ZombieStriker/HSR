@@ -262,22 +262,27 @@ def parseString(words, meaninglist):
             return listOfSentenceChecks
 
         #Loop through all the sentence structures and commands
-        for j in library:
-            jj = library[j]
+        for sentencekey in library:
+            sentencestructuredata = library[sentencekey]
             isPattern = True
-            index = 0
+            inputindex = 0
             wordindex = 0
 
-            foundwords = 0
             nonoptional_words = 0
             optional_words = 0
 
             starOperator = False
             hasStarOperator = False
             tdataball = {}
+            
+
+            if(len(sentencestructuredata["input"]) > len(meaninglist)):
+                print("Skipping check for "+sentencekey+"because the lenth of input is greater than the input")
+                continue
+            print("Checking for sentence structure "+sentencekey)
 
             #First determine how many optional words, non-optional words there are and whether there is a star operator
-            for inputWords in jj["input"]:
+            for inputWords in sentencestructuredata["input"]:
                 if inputWords.startswith("*") or inputWords.startswith("?*"):
                     hasStarOperator = True
                     nonoptional_words+=1
@@ -288,8 +293,10 @@ def parseString(words, meaninglist):
                     optional_words=optional_words+1
             
 
+            starsection = []
+
             #Loop through all the input words, to see if the words match the sentence structure
-            for inputWords in jj["input"]:
+            for inputWords in sentencestructuredata["input"]:
                     
                 #If the input word has a name, add its index (where it is) to the databall
                 if(inputWords.count(":")>0):
@@ -299,12 +306,11 @@ def parseString(words, meaninglist):
 
                 #If the input word is the star operator, then skip to the next word and check if it is the next required/non-optional input word
                 if inputWords == "*":
-                    if(starOperator):
-                        index=index+1
-                        continue
                     starOperator=True
+                    starsection = []
+                    starsection.append(meaninglist[inputindex])
                     lenthOfVar = 0   
-                    index=index+1
+                    inputindex=inputindex+1
                     continue
 
 
@@ -312,27 +318,27 @@ def parseString(words, meaninglist):
                 if starOperator:                     
                     while starOperator:        
                         isQuestionable = False
-                        if len(meaninglist) <= index:
+                        if len(meaninglist) <= inputindex:
                             lenthOfVar+=1
-                            print("Breaking because length of meaninglist is less than index ("+str(index)+"+"+str(lenthOfVar)+")")
+                            print("Breaking because length of meaninglist is less than index ("+str(inputindex)+"+"+str(lenthOfVar)+")")
                             if not "varlen_"+inputsplit[1] in tdataball:
                                 print(str(lenthOfVar)+"=====================================================")
-                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar
+                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
                             break
-                        if(len(words) < index+lenthOfVar):
+                        if(len(words) < inputindex+lenthOfVar):
                             wordindex-=1
-                            index-=1
-                            print("Breaking because The list of words is less than ("+str(index)+"+"+str(lenthOfVar)+")")
+                            inputindex-=1
+                            print("Breaking because The list of words is less than ("+str(inputindex)+"+"+str(lenthOfVar)+")")
                             if not "varlen_"+inputsplit[1] in tdataball:
-                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
+                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
                             break
-                        if(len(words) == index+lenthOfVar):
-                            print("Breaking because The list of words is EQUAL to ("+str(index)+"+"+str(lenthOfVar)+")")
+                        if(len(words) == inputindex+lenthOfVar):
+                            print("Breaking because The list of words is EQUAL to ("+str(inputindex)+"+"+str(lenthOfVar)+")")
                             if not "varlen_"+inputsplit[1] in tdataball:
-                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
+                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
                             break
-                        meanings=meaninglist[index+lenthOfVar]
-                        foundwords+=1
+                        meanings=meaninglist[inputindex+lenthOfVar]
+                        starsection.append(meanings)
                         if  inputWords.startswith("?"):
                             inputWords = inputWords[1:]
                             isQuestionable = True
@@ -351,8 +357,8 @@ def parseString(words, meaninglist):
 
                         if tagfound:
                             if not "varlen_"+inputsplit[1] in tdataball:
-                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
-                            index=index+1 
+                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
+                            inputindex=inputindex+1 
                             starOperator = False
                             wordindex-=1
                         else:
@@ -364,12 +370,12 @@ def parseString(words, meaninglist):
 
                 else:
                     isQuestionable = False
-                    if len(meaninglist) <= index:
+                    if len(meaninglist) <= inputindex:
                         continue
-                    meanings=meaninglist[index]
+                    meanings=meaninglist[inputindex]
 
                     if not inputWords.startswith("?"):
-                        index=index+1
+                        inputindex=inputindex+1
                     else:
                         inputWords = inputWords[1:]
                         isQuestionable = True
@@ -390,44 +396,42 @@ def parseString(words, meaninglist):
 
                     if isQuestionable:
                         if tagfound:
-                             index=index+1
-                             foundwords=foundwords+1
+                             inputindex=inputindex+1
                              wordindex+=1
                     elif not tagfound:
                         isPattern=False
                         continue
                     else:
-                        foundwords=foundwords+1
                         wordindex+=1
 
             if starOperator:
                 starOperator=False
-                index-=1
-                lenthOfVar=len(meaninglist)-index
-                lenthOfVar-=1
-                print(str(jj["input"])+"  "+str(index)+"   -----------    "+str(foundwords)+"/"+str(lenthOfVar)+"  -=- "+str(len(meaninglist))+"       "+str(words))
+                inputindex-=1
+                if lenthOfVar!=1:
+                    starsection.append(meaninglist[inputindex])
+                print(str(sentencestructuredata["input"])+"  "+str(inputindex)+"   -----------    "+str(wordindex)+"/"+str(lenthOfVar)+"  -=- "+str(len(meaninglist))+"       "+str(words))
                 if not "varlen_"+inputsplit[1] in tdataball:
-                    tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
+                    tdataball["varlen_"+inputsplit[1]] = len(starsection)
 
             
             if not hasStarOperator:
-                if not (foundwords>= nonoptional_words and ((foundwords <= nonoptional_words+optional_words))):
+                if not (wordindex>= nonoptional_words and ((wordindex <= nonoptional_words+optional_words))):
                     #print("Not same length: "+str(foundwords)+" ["+str(nonoptional_words)+", "+str(nonoptional_words+optional_words)+"]")
                     continue
 
 
             if isPattern:
-                if index == len(meaninglist) or hasStarOperator:
-                    if jj["priority"] > highestListPriority:
-                        highestListPriority = jj["priority"]
+                if inputindex == len(meaninglist) or hasStarOperator:
+                    if sentencestructuredata["priority"] > highestListPriority:
+                        highestListPriority = sentencestructuredata["priority"]
                         listOfSentenceChecks = []
                         listOfSentenceChecks.append({
-                            "jj":jj,
+                            "jj":sentencestructuredata,
                             "databall":tdataball
                             })
-                    elif jj["priority"] == highestListPriority:
+                    elif sentencestructuredata["priority"] == highestListPriority:
                         listOfSentenceChecks.append({
-                            "jj":jj,
+                            "jj":sentencestructuredata,
                             "databall":tdataball
                             })
         return listOfSentenceChecks

@@ -1,4 +1,36 @@
 {
+    "ifthen":{
+        "input":["if","*:star1","then","*:star2"],
+        "priority":0,
+        "stack":[
+            "Parse:star1",
+            "Jif:2",
+            "Parse:star2"
+        ]
+    },
+    "MATH OPERATION":{
+        "input":["{NUMBER}:number1","{MATH_OP}:op","{NUMBER}:number2","*:rest"],
+        "priority":0,
+        "stack":[
+            "RefObj:number1",
+            "Math:op:number2",
+            "Parse:rest"
+        ]
+    },
+    "MATH OPERATION EQUALS NUMBER":{
+        "input":["equals","{NUMBER}:number3"],
+        "priority":0,
+        "stack":[
+            "Equals:&number3"
+        ]
+    },
+    "MATH OPERATION EQUALS NUMBER AND MORE":{
+        "input":["equals","*:number3"],
+        "priority":0,
+        "stack":[
+            "Equals:&number3"
+        ]
+    },
     "CountdownFromX":{
         "input":["countdown", "from", "{NUMBER}:number"],
         "priority":0,
@@ -8,7 +40,6 @@
             "Say:",
             "AddSP:Countdown:&number"
         ]
-
     },
     "TellMeAJoke-HumorEmittor":{
         "input":["tell", "me" ,"a","joke"],
@@ -96,6 +127,13 @@
             "ParseFact:",
             "Write:",
             "Say:"
+        ]
+    },
+    "PASSINPUT":{
+        "input":["*:star"],
+        "priority":-1,
+        "stack":[
+            "RefObj:star"
         ]
     }
 }

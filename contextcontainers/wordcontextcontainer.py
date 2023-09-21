@@ -54,8 +54,11 @@ class WordContextContainer:
             x["name"] = self.text[0]
             memory[x["name"]]=x
 
-            if self.text[0].isnumeric():
+            if type(self.text[0]) is int or self.text[0].isnumeric():
                 if not "tags" in x:
                     x["tags"] =[]
                 x["tags"].append("NUMBER")
+                x["number"]=int(self.text[0])
                 self.tags.append("NUMBER")
+                self.number = int(self.text[0])
+                self.meaning["number"] = self.number

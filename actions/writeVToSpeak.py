@@ -21,6 +21,8 @@ class WriteVAction(AAction):
             lenth = 1
             if "varlen_"+self.params[0] in databall:
                 lenth = int(databall["varlen_"+self.params[0]])
+            else:
+                print("varlen for "+self.params[0]+" was not found")
             j = 0
             while j < lenth:
                 stringname = currentContext[var_gross+j].text
@@ -35,5 +37,10 @@ class WriteVAction(AAction):
                         databall["output"] = databall["output"]+" "+(actiondataball.memory[stringtemp])["name"]
                     else:
                         databall["output"] = actiondataball.memory[stringtemp]["name"]
+                else:
+                    if "output" in databall:
+                        databall["output"] = databall["output"]+" "+(stringtemp)
+                    else:
+                        databall["output"] = stringtemp
         else:
             print("Cannot find "+str(var_gross)+" (var_"+self.params[0]+")")

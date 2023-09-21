@@ -2,6 +2,8 @@
     "THING":{"text":"THING","priority":0},
     "NAME":{"text":"NAME","priority":0},
     "NULL":{"text":"NULL","priority":0},
+    "TRUE":{"text":"TRUE","priority":0},
+    "FALSE":{"text":"FALSE","priority":0},
     "hello": {
         "text":"hello",
         "priority": 1
@@ -184,76 +186,153 @@
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":1
     },
     "two":{
         "text":"two",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":2
     },
     "three":{
         "text":"three",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":3
     },
     "four":{
         "text":"four",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":4
     },
     "five":{
         "text":"five",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":5
     },
     "six":{
         "text":"six",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":6
     },
     "seven":{
         "text":"seven",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":7
     },
     "eight":{
         "text":"eight",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":8
     },
     "nine":{
         "text":"nine",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":9
     },
     "ten":{
         "text":"ten",
         "priority":1,
         "tags":[
             "NUMBER"
-        ]
+        ],
+        "number":10
     },
     "eleven":{
         "text":"eleven",
         "priority":1,
         "tags":[
             "NUMBER"
+        ],
+        "number":11
+    },
+    "plus":{
+        "text":"plus",
+        "priority":1,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_PLUS"
         ]
+    },
+    "+":{
+        "text":"+",
+        "priority":1,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_PLUS"
+        ]
+    },
+    "divided by":{
+        "text":"divided by",
+        "priority":2,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_DIV"
+        ]
+    },
+    "minus":{
+        "text":"minus",
+        "priority":1,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_SUB"
+        ]
+    },
+    "-":{
+        "text":"-",
+        "priority":1,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_SUB"
+        ]
+    },
+    "multiplied by":{
+        "text":"multiplied by",
+        "priority":1,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_MUL"
+        ]
+    },
+    "subtract":{
+        "text":"subtract",
+        "priority":1,
+        "tags":[
+            "MATH_OP",
+            "MATH_OP_SUB"
+        ]
+    },
+    "true":{
+        "text":"true",
+        "priority":1,
+        "tags":["TRUE"]
+    },
+    "false":{
+        "text":"false",
+        "priority":1,
+        "tags":["FALSE"]
     }
 }

@@ -30,6 +30,11 @@ from actions.writeToSpeak import WriteAction
 from actions.say import SpeakAction
 from actions.parsefactaction import ParseFactAction
 from actions.addsubprocess import AddSubProcessAction
+from actions.parsesegment import ParseSegmentAction
+from actions.mathop import MathOpAction
+from actions.goto import GotoAction
+from actions.jumpiffalse import JIFAction
+from actions.compareequals import CompareEqualsAction
 
 from sprocesses.countdown import CountdownSubprocess
 from sprocesses.timer import TimerSubprocess
@@ -58,6 +63,13 @@ for j in dictionary:
         x["attributes"] = dictionary[j]["attributes"]
     except:
         x["attributes"] = {}
+    try:
+        x["tags"] = dictionary[j]["tags"]
+    except:
+        x["tags"] = {}
+
+    if "number" in dictionary[j]:
+        x["number"] = dictionary[j]["number"]
     object_memory[x["name"]] = x
 
 for i in facts:
@@ -82,18 +94,23 @@ ACTIONS.append(WriteTAction())
 ACTIONS.append(SpeakAction())
 ACTIONS.append(ParseFactAction())
 ACTIONS.append(AddSubProcessAction())
+ACTIONS.append(ParseSegmentAction())
+ACTIONS.append(MathOpAction())
+ACTIONS.append(GotoAction())
+ACTIONS.append(JIFAction())
+ACTIONS.append(CompareEqualsAction())
 
 
 SUBPROCESSES = []
 SUBPROCESSES.append(CountdownSubprocess())
 SUBPROCESSES.append(TimerSubprocess())
 
+r = sr.Recognizer()
+r.energy_threshold=270
 
 
 def getVoice():
     with sr.Microphone() as source:
-        r = sr.Recognizer()
-        r.energy_threshold=350
         text = ""
         try:
             temp = r.listen(source=source,timeout=0.7)
@@ -130,7 +147,7 @@ def main():
     speak("HSR online",tts)
     while True:
 
-        subprocessDataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,speakmethod=speak,tts=tts)
+        subprocessDataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,speakmethod=speak,tts=tts, parsemethod=parseString, wordprocessingmethod=findRightMeaning)
         listToRemove = []
         for subprocess in subprocesses:
             if subprocess.tick(subprocessDataball):
@@ -166,7 +183,6 @@ def main():
 
         cc = []
         stack = []
-        lastjj = None
 
         databall={}
 
@@ -185,14 +201,72 @@ def main():
         print(contextText)
         
 
+        listOfSentenceChecks = parseString(words=words,meaninglist=cc)
+        
+
+        if len(listOfSentenceChecks) == 0:
+            print("No sentences matched :(")
+            continue
+        value = listOfSentenceChecks[random.randint(0,len(listOfSentenceChecks)-1)]
+        selectedSentence = value["jj"]
+        stack = []
+        print("Found sentence structure : "+str(selectedSentence["input"]))
+        
+        for action in selectedSentence["stack"]:
+            stack.append(action)
+        for k in value["databall"]:
+            databall[k]=value["databall"][k]
+
+        databall["deep"] = 1
+                
+
+        actiondataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,speakmethod=speak,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,tts=tts,parsemethod=parseString, stack=stack, wordprocessingmethod = findRightMeaning)
+
+        localactionindex = -1
+        databall["actionindex"]=0
+        while localactionindex != databall["actionindex"] or localactionindex==-1:
+            localactionindex=0
+            if(databall["actionindex"]>len(stack)):
+                break
+            for actionraw in stack:
+                actionsplit = actionraw.split(":",1)
+                actionname = actionsplit[0]
+                parametersraw=actionsplit[1]
+                params = []
+                for i in range(0,parametersraw.count(":")+1):
+                    split = parametersraw.split(":",1)
+                    params.append(split[0])
+                    if len(split)>1:
+                        parametersraw=split[1]
+
+                if localactionindex!=databall["actionindex"]:
+                    localactionindex+=1
+                    continue
+
+
+                for a in ACTIONS:
+                    if a.name == actionname:
+                        a.setParameters(params)
+                        a.action(databall,cc,actiondataball)
+                databall["actionindex"]=databall["actionindex"]+1
+                localactionindex+=1
+
+
+def parseString(words, meaninglist):
+        """Parses the words in the words parameter, and returns an dictionary where "jj" (Name will change) is equal to the command/sentence structure, while "databall" is equal to all the variables that need to be associated with that command/sentence"""
         listOfSentenceChecks = []
         highestListPriority = -2
 
+        #If no words were provided for parsing, return early
+        if(len(words)==0):
+            return listOfSentenceChecks
 
+        #Loop through all the sentence structures and commands
         for j in library:
             jj = library[j]
             isPattern = True
             index = 0
+            wordindex = 0
 
             foundwords = 0
             nonoptional_words = 0
@@ -202,38 +276,63 @@ def main():
             hasStarOperator = False
             tdataball = {}
 
+            #First determine how many optional words, non-optional words there are and whether there is a star operator
             for inputWords in jj["input"]:
                 if inputWords.startswith("*") or inputWords.startswith("?*"):
                     hasStarOperator = True
+                    nonoptional_words+=1
 
                 elif not inputWords.startswith("?"):
                     nonoptional_words=nonoptional_words+1
                 else:
                     optional_words=optional_words+1
             
+
+            #Loop through all the input words, to see if the words match the sentence structure
             for inputWords in jj["input"]:
                     
+                #If the input word has a name, add its index (where it is) to the databall
                 if(inputWords.count(":")>0):
                     inputsplit = inputWords.split(":")
                     inputWords=inputsplit[0]
-                    tdataball["var_"+inputsplit[1]] = index
+                    tdataball["var_"+inputsplit[1]] = wordindex
 
+                #If the input word is the star operator, then skip to the next word and check if it is the next required/non-optional input word
                 if inputWords == "*":
+                    if(starOperator):
+                        index=index+1
+                        continue
                     starOperator=True
-                    if(inputWords.count(":")>0):
-                        inputsplit = inputWords.split(":")
-                        inputWords=inputsplit[0]
-                        tdataball["var_"+inputsplit[1]] = index
-                    lenthOfVar = 1       
+                    lenthOfVar = 0   
                     index=index+1
                     continue
 
+
+                #if its in star operator mode, keep looping until you get all the words that match up until the next required/non-optional word
                 if starOperator:                     
                     while starOperator:        
                         isQuestionable = False
-                        if len(cc) <= index:
+                        if len(meaninglist) <= index:
+                            lenthOfVar+=1
+                            print("Breaking because length of meaninglist is less than index ("+str(index)+"+"+str(lenthOfVar)+")")
+                            if not "varlen_"+inputsplit[1] in tdataball:
+                                print(str(lenthOfVar)+"=====================================================")
+                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar
                             break
-                        meanings=cc[index]
+                        if(len(words) < index+lenthOfVar):
+                            wordindex-=1
+                            index-=1
+                            print("Breaking because The list of words is less than ("+str(index)+"+"+str(lenthOfVar)+")")
+                            if not "varlen_"+inputsplit[1] in tdataball:
+                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
+                            break
+                        if(len(words) == index+lenthOfVar):
+                            print("Breaking because The list of words is EQUAL to ("+str(index)+"+"+str(lenthOfVar)+")")
+                            if not "varlen_"+inputsplit[1] in tdataball:
+                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
+                            break
+                        meanings=meaninglist[index+lenthOfVar]
+                        foundwords+=1
                         if  inputWords.startswith("?"):
                             inputWords = inputWords[1:]
                             isQuestionable = True
@@ -243,26 +342,31 @@ def main():
                             for name in meanings.text:
                                 if inputWords == name:
                                     tagfound=True
-                                    starOperator=False
 
                         if not tagfound:
                             for tags in meanings.tags:
                                 if inputWords == "{"+tags+"}":
                                     tagfound=True
-                                    starOperator = False
                                     break
 
                         if tagfound:
-                            index=index+1  
+                            if not "varlen_"+inputsplit[1] in tdataball:
+                                tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
+                            index=index+1 
+                            starOperator = False
+                            wordindex-=1
                         else:
                             lenthOfVar=lenthOfVar+1  
-                        
-                    tdataball["varlen_"+inputsplit[1]] = lenthOfVar
+                            wordindex+=1
+
+                    if(starOperator):
+                        continue
+
                 else:
                     isQuestionable = False
-                    if len(cc) <= index:
+                    if len(meaninglist) <= index:
                         continue
-                    meanings=cc[index]
+                    meanings=meaninglist[index]
 
                     if not inputWords.startswith("?"):
                         index=index+1
@@ -288,17 +392,22 @@ def main():
                         if tagfound:
                              index=index+1
                              foundwords=foundwords+1
+                             wordindex+=1
                     elif not tagfound:
                         isPattern=False
                         continue
                     else:
                         foundwords=foundwords+1
+                        wordindex+=1
 
             if starOperator:
                 starOperator=False
-                lenthOfVar=len(words)+1-index
-                index = len(cc)
-                tdataball["varlen_"+inputsplit[1]] = lenthOfVar
+                index-=1
+                lenthOfVar=len(meaninglist)-index
+                lenthOfVar-=1
+                print(str(jj["input"])+"  "+str(index)+"   -----------    "+str(foundwords)+"/"+str(lenthOfVar)+"  -=- "+str(len(meaninglist))+"       "+str(words))
+                if not "varlen_"+inputsplit[1] in tdataball:
+                    tdataball["varlen_"+inputsplit[1]] = lenthOfVar-index
 
             
             if not hasStarOperator:
@@ -308,7 +417,7 @@ def main():
 
 
             if isPattern:
-                if index == len(cc):
+                if index == len(meaninglist) or hasStarOperator:
                     if jj["priority"] > highestListPriority:
                         highestListPriority = jj["priority"]
                         listOfSentenceChecks = []
@@ -321,38 +430,7 @@ def main():
                             "jj":jj,
                             "databall":tdataball
                             })
-
-
-        if len(listOfSentenceChecks) == 0:
-            continue
-        value = listOfSentenceChecks[random.randint(0,len(listOfSentenceChecks)-1)]
-        selectedSentence = value["jj"]
-        stack = []
-        print("Found sentence structure : "+str(selectedSentence["input"]))
-        
-        for action in selectedSentence["stack"]:
-            stack.append(action)
-        for k in value["databall"]:
-            databall[k]=value["databall"][k]
-                
-
-        actiondataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,speakmethod=speak,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,tts=tts)
-
-        for actionraw in stack:
-            actionsplit = actionraw.split(":",1)
-            actionname = actionsplit[0]
-            parametersraw=actionsplit[1]
-            params = []
-            for i in range(0,parametersraw.count(":")+1):
-                split = parametersraw.split(":",1)
-                params.append(split[0])
-                if len(split)>1:
-                    parametersraw=split[1]
-
-            for a in ACTIONS:
-                if a.name == actionname:
-                    a.setParameters(params)
-                    a.action(databall,cc,actiondataball)
+        return listOfSentenceChecks
 
 
 
@@ -366,7 +444,6 @@ def speak(message, tts):
         for path in os.listdir(os.path.join("voice")):
             if os.path.isfile(os.path.join("voice",path)):
                 count=count+1
-        print(count)
         if count > 400:
             audiofile = None
             lastmodified = -1

@@ -9,4 +9,4 @@ class SpeakAction(AAction):
         if "output" in databall:
               actiondataball.speak(databall["output"])
         else:
-             print("No output :(")
+             print("No output for speaking :(")

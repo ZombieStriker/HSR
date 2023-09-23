@@ -19,12 +19,12 @@
     },
     "MATH OPERATION EQUALS NUMBER":{
         "input":["equals","{NUMBER}:number3"],
-        "priority":0,
+        "priority":1,
         "stack":[
             "Equals:&number3"
         ]
     },
-    "MATH OPERATION EQUALS NUMBER AND MORE":{
+    "MATH OPERATION EQUALS MORE":{
         "input":["equals","*:number3"],
         "priority":0,
         "stack":[

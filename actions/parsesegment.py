@@ -52,8 +52,8 @@ class ParseSegmentAction(AAction):
             stack=[]
             tdataball = {}
             for d in databall:
-                tdataball[d] = databall[d]
-            tdataball["deep"] = databall["deep"]+1
+                if not d.startswith("var_") and not d.startswith("varlen_") and  d !="actionindex" and d != "output" and d != "deep":
+                    tdataball[d] = databall[d]
 
             for action in selectedSentence["stack"]:
                 stack.append(action)

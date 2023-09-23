@@ -1,4 +1,5 @@
 from actions.actions import AAction
+from contextcontainers.wordcontextcontainer import WordContextContainer
 
 class CompareEqualsAction(AAction):
     def __init__(self,):
@@ -33,7 +34,18 @@ class CompareEqualsAction(AAction):
                                  stringtemp=stringtemp.join("_")
                     
                 print("=="+stringtemp)
-                databall["memory1"] = actiondataball.memory["TRUE"]
+                print("xx"+str(databall["memory1"]))
+                
+
+                cc = WordContextContainer([stringtemp])
+                cc.process(actiondataball.dictionary,actiondataball.memory)
+
+
+                if("number" in databall["memory1"] and hasattr(cc,"number")):
+                    if(databall["memory1"]["number"] == cc.number):
+                        databall["memory1"] = actiondataball.memory["TRUE"]
+                    else:
+                        databall["memory1"] = actiondataball.memory["FALSE"]
             else:
                 if(databall["memory1"] == int(self.params[0])):
                     databall["memory1"] = actiondataball.memory["TRUE"]

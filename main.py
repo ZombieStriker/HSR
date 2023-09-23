@@ -178,9 +178,6 @@ def main():
 
 
 
-
-
-
         cc = []
         stack = []
 
@@ -220,7 +217,7 @@ def main():
         databall["deep"] = 1
                 
 
-        actiondataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,speakmethod=speak,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,tts=tts,parsemethod=parseString, stack=stack, wordprocessingmethod = findRightMeaning)
+        actiondataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,speakmethod=speak,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,tts=tts,parsemethod=parseString, stack=stack, wordprocessingmethod = findRightMeaning, dictionary=dictionary)
 
         localactionindex = -1
         databall["actionindex"]=0
@@ -266,18 +263,15 @@ def parseString(words, meaninglist):
             sentencestructuredata = library[sentencekey]
             isPattern = True
             inputindex = 0
-            wordindex = 0
 
             nonoptional_words = 0
             optional_words = 0
 
-            starOperator = False
             hasStarOperator = False
             tdataball = {}
             
 
             if(len(sentencestructuredata["input"]) > len(meaninglist)):
-                print("Skipping check for "+sentencekey+"because the lenth of input is greater than the input")
                 continue
             print("Checking for sentence structure "+sentencekey)
 
@@ -291,137 +285,102 @@ def parseString(words, meaninglist):
                     nonoptional_words=nonoptional_words+1
                 else:
                     optional_words=optional_words+1
+
             
+            #Tag each section appropriately
+            wordChunks = []
+            for inputWordsIndex in range(0,len(sentencestructuredata["input"])):
+                inputWords = sentencestructuredata["input"][inputWordsIndex]
+                ball = {}
+                if inputWords.count(":")>0:
+                    split = inputWords.split(":")
+                    ball["name"] = split[1]
+                    ball["index"] = inputindex
+                    inputWords = split[0]
 
-            starsection = []
-
-            #Loop through all the input words, to see if the words match the sentence structure
-            for inputWords in sentencestructuredata["input"]:
-                    
-                #If the input word has a name, add its index (where it is) to the databall
-                if(inputWords.count(":")>0):
-                    inputsplit = inputWords.split(":")
-                    inputWords=inputsplit[0]
-                    tdataball["var_"+inputsplit[1]] = wordindex
-
-                #If the input word is the star operator, then skip to the next word and check if it is the next required/non-optional input word
                 if inputWords == "*":
-                    starOperator=True
-                    starsection = []
-                    starsection.append(meaninglist[inputindex])
-                    lenthOfVar = 0   
-                    inputindex=inputindex+1
-                    continue
+                    hasStarOperator = True
+                    ball["words"] = []
 
-
-                #if its in star operator mode, keep looping until you get all the words that match up until the next required/non-optional word
-                if starOperator:                     
-                    while starOperator:        
-                        isQuestionable = False
-                        if len(meaninglist) <= inputindex:
-                            lenthOfVar+=1
-                            print("Breaking because length of meaninglist is less than index ("+str(inputindex)+"+"+str(lenthOfVar)+")")
-                            if not "varlen_"+inputsplit[1] in tdataball:
-                                print(str(lenthOfVar)+"=====================================================")
-                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
-                            break
-                        if(len(words) < inputindex+lenthOfVar):
-                            wordindex-=1
-                            inputindex-=1
-                            print("Breaking because The list of words is less than ("+str(inputindex)+"+"+str(lenthOfVar)+")")
-                            if not "varlen_"+inputsplit[1] in tdataball:
-                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
-                            break
-                        if(len(words) == inputindex+lenthOfVar):
-                            print("Breaking because The list of words is EQUAL to ("+str(inputindex)+"+"+str(lenthOfVar)+")")
-                            if not "varlen_"+inputsplit[1] in tdataball:
-                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
-                            break
-                        meanings=meaninglist[inputindex+lenthOfVar]
-                        starsection.append(meanings)
-                        if  inputWords.startswith("?"):
-                            inputWords = inputWords[1:]
-                            isQuestionable = True
-
-                        tagfound = False
-                        if not tagfound:
-                            for name in meanings.text:
-                                if inputWords == name:
-                                    tagfound=True
-
-                        if not tagfound:
-                            for tags in meanings.tags:
-                                if inputWords == "{"+tags+"}":
-                                    tagfound=True
-                                    break
-
-                        if tagfound:
-                            if not "varlen_"+inputsplit[1] in tdataball:
-                                tdataball["varlen_"+inputsplit[1]] = len(starsection)
-                            inputindex=inputindex+1 
-                            starOperator = False
-                            wordindex-=1
-                        else:
-                            lenthOfVar=lenthOfVar+1  
-                            wordindex+=1
-
-                    if(starOperator):
+                    if(len(sentencestructuredata["input"]) <= inputindex+1):   
+                        for appp in range(inputindex,len(meaninglist)):
+                            ball["words"].append(meaninglist[appp]) 
+                        wordChunks.append(ball)
                         continue
+
+                    if len(meaninglist) > inputindex:                                    
+                        ball["words"].append(meaninglist[inputindex]) 
+                    loopbool = True
+                    inputWordsIndex+=1
+                    while loopbool:
+                        inputindex+=1
+
+                        if len(sentencestructuredata["input"]) <= inputWordsIndex:
+                            if(len(meaninglist) > inputindex):
+                                ball["words"].append(meaninglist[inputindex]) 
+                            loopbool = False
+
+                        else:
+                            inputWords = sentencestructuredata["input"][inputWordsIndex]
+                            if inputWords.count(":")>0:
+                                split = inputWords.split(":")
+                                inputWords = split[0]
+
+                            if(inputWords == "*"):
+                                if(len(meaninglist) > inputindex):
+                                    ball["words"].append(meaninglist[inputindex]) 
+                            else:
+                                if len(meaninglist) <= inputindex:
+                                    break
+                                for m in meaninglist[inputindex].text:
+                                    if(m == inputWords):
+                                        loopbool = False
+                                        break
+
+                                for m in meaninglist[inputindex].tags:
+                                    if("{"+m+"}" == inputWords):
+                                        loopbool = False
+                                        break
+                                if(loopbool):
+                                    ball["words"].append(meaninglist[inputindex]) 
+                    wordChunks.append(ball)
+                        
 
                 else:
-                    isQuestionable = False
+                    foundword = False
                     if len(meaninglist) <= inputindex:
+                        isPattern = False
                         continue
-                    meanings=meaninglist[inputindex]
+                    for m in meaninglist[inputindex].text:
+                        if(m == inputWords):
+                            foundword = True
+                            break
 
-                    if not inputWords.startswith("?"):
-                        inputindex=inputindex+1
+                    for m in meaninglist[inputindex].tags:
+                        if("{"+m+"}" == inputWords):
+                            foundword = True
+                            break
+                        
+                    if(foundword):
+                        ball["words"] = []
+                        ball["words"].append(meaninglist[inputindex])    
+                        inputindex+=1
+                        wordChunks.append(ball)
                     else:
-                        inputWords = inputWords[1:]
-                        isQuestionable = True
-                    tagfound = False
-                    if inputWords == "*":
-                        tagfound=True
+                        isPattern = False
 
-                    if not tagfound:
-                        for name in meanings.text:
-                            if inputWords == name:
-                                tagfound=True
+            print(str(wordChunks)+ "    -=-=-=-=-=    "+str(len(wordChunks)))
 
-                    if not tagfound:
-                        for tags in meanings.tags:
-                            if inputWords == "{"+tags+"}":
-                                tagfound=True
-                                break
-
-                    if isQuestionable:
-                        if tagfound:
-                             inputindex=inputindex+1
-                             wordindex+=1
-                    elif not tagfound:
-                        isPattern=False
-                        continue
-                    else:
-                        wordindex+=1
-
-            if starOperator:
-                starOperator=False
-                inputindex-=1
-                if lenthOfVar!=1:
-                    starsection.append(meaninglist[inputindex])
-                print(str(sentencestructuredata["input"])+"  "+str(inputindex)+"   -----------    "+str(wordindex)+"/"+str(lenthOfVar)+"  -=- "+str(len(meaninglist))+"       "+str(words))
-                if not "varlen_"+inputsplit[1] in tdataball:
-                    tdataball["varlen_"+inputsplit[1]] = len(starsection)
-
-            
-            if not hasStarOperator:
-                if not (wordindex>= nonoptional_words and ((wordindex <= nonoptional_words+optional_words))):
-                    #print("Not same length: "+str(foundwords)+" ["+str(nonoptional_words)+", "+str(nonoptional_words+optional_words)+"]")
-                    continue
+            for t in wordChunks:
+                if "name" in t:
+                    stringname = t["name"]
+                    tdataball["var_"+stringname] = t["index"]
+                    tdataball["varlen_"+stringname] = len(t["words"])
+                
 
 
             if isPattern:
-                if inputindex == len(meaninglist) or hasStarOperator:
+                if inputindex <= len(meaninglist):
                     if sentencestructuredata["priority"] > highestListPriority:
                         highestListPriority = sentencestructuredata["priority"]
                         listOfSentenceChecks = []

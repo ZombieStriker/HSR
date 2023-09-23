@@ -6,6 +6,7 @@ class WriteVAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """writes the  object to \"output\""""
         var_gross = -1
 
         try:

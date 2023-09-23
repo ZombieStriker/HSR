@@ -6,6 +6,7 @@ class WriteAction(AAction):
 
 
     def action(self,databall, currentContext, actiondataball):
+        """writes the current object in \"memory1\" to \"output\""""
         if "memory1" in databall:
             if "output" in databall:
                 databall["output"] = databall["output"]+" "+(databall["memory1"])

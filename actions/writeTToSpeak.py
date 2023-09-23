@@ -6,6 +6,7 @@ class WriteTAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """writes the text directly to \"output\""""
         if self.params[0] in actiondataball.memory:
             if "output" in databall:
                     databall["output"] = databall["output"]+" "+actiondataball.memory[self.params[0]]["name"]

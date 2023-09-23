@@ -7,7 +7,7 @@ class CompareEqualsAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
-        print("Equals Called")
+        """Takes what is in the memory space \"memory1\" and sees if it is equal to true, or if what it represents equals true"""
         if "memory1" in databall:
             if self.params[0].startswith("&"):
                 self.params[0] = self.params[0][1:]

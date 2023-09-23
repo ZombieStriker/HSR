@@ -6,6 +6,7 @@ class AddSubProcessAction(AAction):
 
 
     def action(self,databall, currentContext, actiondataball):
+        """Adds a sub process to the stack of subprocesses"""
         if(len(self.params) > 0):
             for ss in actiondataball.SUBPROCESSES:
                 if(ss.name == self.params[0]):

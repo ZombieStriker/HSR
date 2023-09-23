@@ -1,7 +1,7 @@
 {
     "and syntax":{
         "input":["*:star1","and","*:star2"],
-        "priority":0,
+        "priority":1,
         "stack":[
             "Parse:star1",
             "Equals:&star1",

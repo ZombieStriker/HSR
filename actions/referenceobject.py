@@ -4,6 +4,7 @@ class ReferenceObjectAction(AAction):
         super().__init__("RefObj")
 
     def action(self,databall, currentContext, actiondataball):
+        """Loads an object into \"memory1\""""
 
         var_gross = 0
 

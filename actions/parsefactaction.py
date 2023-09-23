@@ -6,6 +6,7 @@ class ParseFactAction(AAction):
 
 
     def action(self,databall, currentContext, actiondataball):
+        """Parses a fact about the object in \"memory1\""""
         if "memory1" in databall:
             ocurrence = databall["memory1"]["occurrence"]
             values = databall["memory1"]["values"]

@@ -6,4 +6,5 @@ class GotoAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """Simply sets the index that the stack of actions is set to"""
         databall["actionindex"]=int(self.params[0])

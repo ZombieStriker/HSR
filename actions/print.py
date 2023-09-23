@@ -6,5 +6,6 @@ class PrintAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """Simply prints the object in \"memory1\". Used for debugging"""
         if "memory1" in databall:
               print(databall["memory1"])

@@ -144,9 +144,16 @@ def main():
     tts = TTS("tts_models/en/ljspeech/tacotron2-DCA").to(device)
     #wav = tts.tts("This is a test! This is also a test!!", speaker=tts.speakers[0], language=tts.languages[0])
 
+    print("***************************************************************************")
+    print("Please note that the first word spoken normally does not get detected.")
+    print("Try making a noise or say a test phrase first before saying what you want to say.")
+    print("***************************************************************************")
     speak("HSR online",tts)
+
+    #The core loop.
     while True:
 
+        #Check subprocesses first. If the subprocess returns true ion the tick method, ther subprocess is complete.
         subprocessDataball = DataBall(ACTIONS=ACTIONS,memory=object_memory,SUBPROCESSES=SUBPROCESSES,subprocesses=subprocesses,speakmethod=speak,tts=tts, parsemethod=parseString, wordprocessingmethod=findRightMeaning)
         listToRemove = []
         for subprocess in subprocesses:
@@ -158,7 +165,7 @@ def main():
 
 
 
-
+        #Get the spoken phrase
         text = getVoice()
         if(len(text)==0):
             continue
@@ -166,6 +173,7 @@ def main():
         #Strip punctuation
         text = text.replace("'","").replace(",","")
 
+        #Replace contractions with the full words, for easier detection
         for c in contractions:
             if(text.startswith(contractions[c]["key"]+" ")):
                 text = contractions[c]["value"]+text[len(contractions[c]["key"]):]
@@ -182,7 +190,7 @@ def main():
         stack = []
 
         databall={}
-
+        #Find the right meaning for each of the words
         for i in range(0,len(words)):
             meaning = findRightMeaning(words,i)
             cc.append(meaning)
@@ -198,16 +206,18 @@ def main():
         print(contextText)
         
 
+        #Check which sentence structures match the phrase provided
         listOfSentenceChecks = parseString(words=words,meaninglist=cc)
         
 
         if len(listOfSentenceChecks) == 0:
             print("No sentences matched :(")
             continue
+
+        #Choose one of the sentence structures if there are multiple matching
         value = listOfSentenceChecks[random.randint(0,len(listOfSentenceChecks)-1)]
         selectedSentence = value["jj"]
         stack = []
-        print("Found sentence structure : "+str(selectedSentence["input"]))
         
         for action in selectedSentence["stack"]:
             stack.append(action)
@@ -267,18 +277,15 @@ def parseString(words, meaninglist):
             nonoptional_words = 0
             optional_words = 0
 
-            hasStarOperator = False
             tdataball = {}
             
 
             if(len(sentencestructuredata["input"]) > len(meaninglist)):
                 continue
-            print("Checking for sentence structure "+sentencekey)
 
             #First determine how many optional words, non-optional words there are and whether there is a star operator
             for inputWords in sentencestructuredata["input"]:
                 if inputWords.startswith("*") or inputWords.startswith("?*"):
-                    hasStarOperator = True
                     nonoptional_words+=1
 
                 elif not inputWords.startswith("?"):
@@ -292,16 +299,17 @@ def parseString(words, meaninglist):
             for inputWordsIndex in range(0,len(sentencestructuredata["input"])):
                 inputWords = sentencestructuredata["input"][inputWordsIndex]
                 ball = {}
+                #First detect the name of each section
                 if inputWords.count(":")>0:
                     split = inputWords.split(":")
                     ball["name"] = split[1]
                     ball["index"] = inputindex
                     inputWords = split[0]
 
+                #If the stasr operator is used
                 if inputWords == "*":
-                    hasStarOperator = True
                     ball["words"] = []
-
+                    #if its at the end of the sentence structure
                     if(len(sentencestructuredata["input"]) <= inputindex+1):   
                         for appp in range(inputindex,len(meaninglist)):
                             ball["words"].append(meaninglist[appp]) 
@@ -312,6 +320,7 @@ def parseString(words, meaninglist):
                         ball["words"].append(meaninglist[inputindex]) 
                     loopbool = True
                     inputWordsIndex+=1
+                    #if not, loop until it finds the next input word that ends this section
                     while loopbool:
                         inputindex+=1
 
@@ -347,6 +356,7 @@ def parseString(words, meaninglist):
                         
 
                 else:
+                    #Else, if no star operator is used, and its a regular check
                     foundword = False
                     if len(meaninglist) <= inputindex:
                         isPattern = False
@@ -361,6 +371,7 @@ def parseString(words, meaninglist):
                             foundword = True
                             break
                         
+                    #If the word was found, append the ball to wordchunks. If not found, set isPattern to false 
                     if(foundword):
                         ball["words"] = []
                         ball["words"].append(meaninglist[inputindex])    
@@ -369,6 +380,7 @@ def parseString(words, meaninglist):
                     else:
                         isPattern = False
 
+            #Finally, this adds the data to the databall
             for t in wordChunks:
                 if "name" in t:
                     stringname = t["name"]
@@ -376,7 +388,7 @@ def parseString(words, meaninglist):
                     tdataball["varlen_"+stringname] = len(t["words"])
                 
 
-
+            #If the pattern was found, add it to the list of sentences
             if isPattern:
                 if inputindex <= len(meaninglist):
                     if sentencestructuredata["priority"] > highestListPriority:
@@ -396,10 +408,12 @@ def parseString(words, meaninglist):
 
 
 def speak(message, tts):
+    """Prints out the message, and creates and plays an audio for the message."""
     if type(message) is not str:
         message = str(message)
     message=message.strip()
     print("HSR: "+message)
+    #If the audio file does not exist, create it
     if not os.path.exists(os.path.join("voice",message+".wav")):
         count = 0
         for path in os.listdir(os.path.join("voice")):

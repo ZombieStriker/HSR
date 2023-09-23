@@ -6,6 +6,7 @@ class MathOpAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """Performs arithmatic on \"memory1\" and sets memory1 to the new value"""
         if "memory1" in databall:
             var_gross = -1
             try:

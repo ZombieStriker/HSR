@@ -4,6 +4,7 @@ class ReferenceAction(AAction):
         super().__init__("Ref")
 
     def action(self,databall, currentContext, actiondataball):
+        """Loads directly an object into \"memory1\""""
         if self.p1 in actiondataball.memory:
             databall["memory1"]= actiondataball.memory[self.params[0]]
         else:

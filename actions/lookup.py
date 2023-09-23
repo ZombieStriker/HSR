@@ -6,6 +6,7 @@ class LookUpAction(AAction):
 
 
     def action(self,databall, currentContext, actiondataball):
+        """Looks up an attribute of the object in \"memory1\""""
         if "memory1" in databall and self.params[0] in databall["memory1"]:
             databall["memory1"] = databall["memory1"][self.params[0]]
         else:

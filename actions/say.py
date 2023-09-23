@@ -6,6 +6,7 @@ class SpeakAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """Says the message set in \"output\""""
         if "output" in databall:
               actiondataball.speak(databall["output"])
         else:

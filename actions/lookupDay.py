@@ -7,6 +7,7 @@ class LookUpDayAction(AAction):
 
 
     def action(self,databall, currentContext, actiondataball):
+        """Looks up an day of the object in \"memory1\""""
         if "memory1" in databall and "name" in databall["memory1"]:
             relDate = databall["memory1"]["name"]
             date = DateUtil().getDayOfWeekFromRelative(relDate)

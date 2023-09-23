@@ -6,6 +6,7 @@ class LookUpVAction(AAction):
 
 
     def action(self,databall, currentContext, actiondataball):
+        """Looks up a relative attribute of the object in \"memory1\". May be merged with LookUp in the future"""
         var_gross = 0
 
         if "var_"+self.params[0] in databall:

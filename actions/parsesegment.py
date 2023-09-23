@@ -7,6 +7,7 @@ class ParseSegmentAction(AAction):
 
 
     def action(self,databall, currentContext,actiondataball):
+        """Parses the sub segment of the sentence structure. Really important"""
         var_gross = -1
 
         try:
@@ -38,15 +39,8 @@ class ParseSegmentAction(AAction):
                 return
             value = parsed[random.randint(0,len(parsed)-1)]
             selectedSentence = value["jj"]
-            print(str(databall["deep"])+":="+"Found sub-sentence structure : "+str(selectedSentence["input"]))
+            #print(str(databall["deep"])+":="+"Found sub-sentence structure : "+str(selectedSentence["input"]))
 
-
-            cctext = ""
-            for c in cc:
-                for ccc in c.text:
-                    cctext=cctext+" "+ccc
-
-            print(str(databall["deep"])+":="+" For text: "+cctext)
 
 
             stack=[]
@@ -85,7 +79,6 @@ class ParseSegmentAction(AAction):
                 for d in tdataball:
                     if not d.startswith("var_") and not d.startswith("varlen_") and  d !="actionindex" and d != "output" and d != "deep":
                         databall[d]=tdataball[d]
-                        print(str(databall["deep"])+":="+"Transferring "+d +" " + str(databall[d]))
 
 
         else:

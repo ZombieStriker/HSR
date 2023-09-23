@@ -13,12 +13,16 @@
 * "What is {Today/Yesterday/Tomorrow}":
     * The bot will look up what day of the way the {Day} is, and relay it back to you.
 * "Say ____"
-    * The bot will repeat what you say.
+    * The bot will repeat explicitly what you say.
 * "Tell me a joke"
     * The bot will currently respond that its humor emitters are offline.
         * //TODO: Write Joke Creator 
 * "Count down from ____"
     * The bot will count down from the given number
+* "If ____ then ____"
+    * The bot will only preform the second command if the first condition is true
+* "{ARITHMATIC}"
+    * The bot will preform the arithmatic, and if you include "equals ____" at the end, will return either TRUE or false for memory space "memory1"
 
 ## Contractions
 * Whats -> What is

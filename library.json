@@ -1,4 +1,15 @@
 {
+    "and syntax":{
+        "input":["*:star1","and","*:star2"],
+        "priority":0,
+        "stack":[
+            "Parse:star1",
+            "Equals:&star1",
+            "Jif:3",
+            "Parse:star2",
+            "Equals:&star2"
+        ]
+    },
     "ifthen":{
         "input":["if","*:star1","then","*:star2"],
         "priority":0,

@@ -369,8 +369,6 @@ def parseString(words, meaninglist):
                     else:
                         isPattern = False
 
-            print(str(wordChunks)+ "    -=-=-=-=-=    "+str(len(wordChunks)))
-
             for t in wordChunks:
                 if "name" in t:
                     stringname = t["name"]

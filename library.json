@@ -98,7 +98,7 @@
     },
     "WhatISTodaysDate":{
         "input":["{Definer_desc}","{Comparator}:comp1","{DAY_REL}:dayrel","date:date"],
-        "priority":0,
+        "priority":1,
         "stack":[
             "WriteV:dayrel",
             "WriteV:date",

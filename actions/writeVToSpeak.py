@@ -25,6 +25,9 @@ class WriteVAction(AAction):
             else:
                 print("varlen for "+self.params[0]+" was not found")
             j = 0
+            if(lenth == 0):
+                print("Length is "+str(lenth))
+                lenth=1
             while j < lenth:
                 stringname = currentContext[var_gross+j].text
                 stringtemp = ""
